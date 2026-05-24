@@ -17,6 +17,7 @@
 - CPA 导出：一个账号一个 JSON 文件
 - sub2api 导出：生成包含 `accounts` 数组的聚合 JSON
 - Cockpit 导出：生成 `cockpit-tools` 可直接导入的扁平 Codex token JSON 数组
+- CPA 仓管：扫描 CLIProxyAPI 401 凭证，自动重登获取新 CPA，封号时删除旧凭证
 - 支持粘贴原始 `https://chatgpt.com/api/auth/session` JSON 并转换
 - 支持通过环境变量或 Windows 系统代理配置后端出站代理
 
@@ -165,6 +166,25 @@ Cockpit 导出采用 `cockpit-tools` 当前导入逻辑支持的扁平 Codex tok
 ```
 
 `cockpit-tools` 会读取 `id_token`、`access_token`、`account_id`，并在 `refresh_token` 为空时使用 `session_token` 作为回退字段。
+
+## CPA 仓管
+
+“CPA 仓管”页用于直接操作 CLIProxyAPI 的管理 API。处理流程：
+
+```text
+扫描 CPA auth-files
+→ 发现 401 凭证
+→ 用本地同邮箱 Outlook 账号重新登录 ChatGPT
+→ 登录成功：生成 CPA JSON 并上传覆盖
+→ 登录失败且账号已停用：删除 CPA 中的旧凭证
+```
+
+需要填写：
+
+- CPA 地址，例如 `http://localhost:8317`
+- 管理密钥，对应 CLIProxyAPI 管理 API 的 `Authorization: Bearer <key>`
+
+本功能只会自动处理 `status/status_message` 中包含 `401` 或 `unauthorized` 的凭证。其他异常会跳过或记录失败，避免误删。
 
 ## 本地数据
 

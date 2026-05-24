@@ -148,25 +148,6 @@ body {
 .app-title { font-size: 1.25rem; font-weight: 700; color: var(--text-primary); }
 .app-subtitle { font-size: 0.75rem; color: var(--text-muted); font-weight: 400; margin-top: 1px; }
 
-.header-right { display: flex; align-items: center; gap: 10px; }
-
-.status-badge {
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 14px; border-radius: 20px;
-  background: var(--success-bg);
-  border: 1px solid rgba(16, 185, 129, 0.15);
-  font-size: 0.78rem; color: var(--success); font-weight: 500;
-}
-
-.status-badge.loading { background: var(--warning-bg); border-color: rgba(245, 158, 11, 0.15); color: var(--warning); }
-.status-badge.error { background: var(--error-bg); border-color: rgba(239, 68, 68, 0.15); color: var(--error); }
-
-.status-dot {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: currentColor;
-  animation: pulse 2s ease-in-out infinite;
-}
-
 @keyframes pulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.4; transform: scale(0.8); }
@@ -641,9 +622,119 @@ body {
 
 .converter-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 
-/* --- Tab 4: 日志 --- */
+/* --- Tab 4: CPA 仓管 --- */
+.warehouse-section { display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.warehouse-panel { display: flex; flex-direction: column; gap: 14px; padding: 18px; flex: 1; min-height: 0; }
+.warehouse-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; }
+.warehouse-header h3 { font-size: 1rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.warehouse-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.warehouse-config { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.warehouse-input { padding-left: 14px; }
+.warehouse-limit-group { min-width: 190px; }
+.warehouse-limit-label {
+  position: absolute;
+  left: 12px;
+  z-index: 1;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+.warehouse-limit-input { padding-left: 104px; }
+.warehouse-interval-group { min-width: 150px; }
+.warehouse-interval-label {
+  position: absolute;
+  left: 12px;
+  z-index: 1;
+  color: var(--text-muted);
+  font-size: 0.74rem;
+  font-weight: 600;
+  pointer-events: none;
+}
+.warehouse-interval-input { padding-left: 82px; }
+.warehouse-auto-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: rgba(255, 255, 255, 0.58);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+}
+.warehouse-auto-toggle input { display: none; }
+.warehouse-toggle-track {
+  width: 34px;
+  height: 18px;
+  border-radius: 999px;
+  padding: 2px;
+  background: rgba(148, 163, 184, 0.35);
+  transition: var(--transition-fast);
+}
+.warehouse-toggle-thumb {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 4px rgba(15, 23, 42, 0.2);
+  transition: var(--transition-fast);
+}
+.warehouse-auto-toggle input:checked + .warehouse-toggle-track { background: var(--success); }
+.warehouse-auto-toggle input:checked + .warehouse-toggle-track .warehouse-toggle-thumb { transform: translateX(16px); }
+.warehouse-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 30px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--text-muted);
+}
+.warehouse-status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.warehouse-status-pill.connected {
+  background: var(--success-bg);
+  border-color: rgba(16, 185, 129, 0.18);
+  color: var(--success);
+}
+.warehouse-status-pill.running {
+  background: var(--warning-bg);
+  border-color: rgba(245, 158, 11, 0.2);
+  color: var(--warning);
+}
+.warehouse-status-pill.running .warehouse-status-dot { animation: pulse 1.1s ease-in-out infinite; }
+.warehouse-status-pill.error {
+  background: var(--error-bg);
+  border-color: rgba(239, 68, 68, 0.2);
+  color: var(--error);
+}
+.warehouse-stats { display: grid; grid-template-columns: repeat(4, minmax(120px, 1fr)); gap: 8px; }
+.warehouse-workspace { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(340px, 0.65fr); gap: 12px; }
+.warehouse-table-wrapper { min-height: 0; overflow: auto; border-radius: var(--radius-md); border: 1px solid rgba(0, 0, 0, 0.04); }
+.warehouse-table { width: 100%; border-collapse: collapse; min-width: 860px; font-size: 0.82rem; }
+.warehouse-table th, .warehouse-table td { padding: 10px 14px; text-align: left; border-bottom: 1px solid rgba(0, 0, 0, 0.04); white-space: nowrap; max-width: 320px; overflow: hidden; text-overflow: ellipsis; }
+.warehouse-table th { position: sticky; top: 0; z-index: 2; background: rgba(248, 250, 252, 0.95); color: var(--text-muted); font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.warehouse-ok { color: var(--success); font-weight: 700; }
+.warehouse-bad { color: var(--error); font-weight: 700; }
+.warehouse-log-panel { border-radius: var(--radius-md); box-shadow: none; max-height: none; }
+
+/* --- Tab 5: 日志 --- */
 .log-section {
-  flex: 1; padding: 16px;
+  flex: 1; min-height: 0; padding: 16px;
   background: #0f172a !important; border: 1px solid #1e293b !important;
   color: #e2e8f0; font-family: 'SF Mono', Consolas, monospace;
   font-size: 0.78rem; overflow-y: auto;
@@ -654,6 +745,7 @@ body {
 
 .log-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
 .log-header h3 { color: #94a3b8; font-size: 0.82rem; }
+.log-clear-btn { color: rgba(255,255,255,0.5); border-color: rgba(255,255,255,0.1); }
 .log-list { display: flex; flex-direction: column; gap: 2px; }
 
 .log-entry {
@@ -829,6 +921,8 @@ body {
   .main-layout { flex-direction: column; }
   .sidebar { width: 100%; min-width: auto; max-height: 300px; }
   .converter-section { grid-template-columns: 1fr; }
+  .warehouse-workspace { grid-template-columns: 1fr; }
+  .warehouse-log-panel { min-height: 260px; }
 }
 
 @media (max-width: 768px) {
@@ -838,4 +932,6 @@ body {
   .tab-btn { padding: 8px 14px; font-size: 0.8rem; }
   .control-row { flex-wrap: wrap; }
   .login-toolbar { flex-wrap: wrap; }
+  .warehouse-header { flex-direction: column; }
+  .warehouse-stats { grid-template-columns: repeat(2, 1fr); }
 }

@@ -142,6 +142,7 @@ app.use('/api', require('./routes/accounts'));
 app.use('/api', require('./routes/mail'));
 app.use('/api', require('./routes/chatgpt'));
 app.use('/api', require('./routes/convert'));
+app.use('/api', require('./routes/warehouse'));
 
 // ==================== 错误处理 ====================
 app.use((err, req, res, next) => {
@@ -164,6 +165,7 @@ app.listen(config.port, () => {
   console.log('║   📬 Outlook 双协议取件                  ║');
   console.log('║   🤖 ChatGPT 自动登录                   ║');
   console.log('║   🔄 Session → CPA / sub2api 转换       ║');
+  console.log('║   📦 CPA 401 自动仓管                  ║');
   console.log('╚══════════════════════════════════════════╝');
   console.log('');
 });

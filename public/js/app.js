@@ -35,7 +35,12 @@ document.addEventListener('DOMContentLoaded', () => {
   // 清空日志
   document.getElementById('btnClearLogs')?.addEventListener('click', () => {
     document.getElementById('logList').innerHTML = '';
-    addLog('日志已清空', 'info');
+    addLog('自动登录日志已清空', 'info');
+  });
+
+  document.getElementById('btnClearWarehouseLogs')?.addEventListener('click', () => {
+    document.getElementById('warehouseLogList').innerHTML = '';
+    addWarehouseLog('CPA 仓管日志已清空', 'info');
   });
 
   // 启动 SSE 连接
@@ -144,6 +149,12 @@ function handleSSEEvent(data) {
       addLog(`登录任务完成: 成功 ${data.succeeded} / 失败 ${data.failed}`, data.failed > 0 ? 'warning' : 'success');
       if (typeof onLoginComplete === 'function') onLoginComplete(data);
       break;
+    case 'warehouse_start':
+    case 'warehouse_status':
+    case 'warehouse_item':
+    case 'warehouse_complete':
+      if (typeof onWarehouseEvent === 'function') onWarehouseEvent(data);
+      break;
   }
 }
 
@@ -210,8 +221,8 @@ function showToast(message, type = 'info', duration = 3500) {
 }
 
 // ==================== 日志 ====================
-function addLog(message, type = 'info') {
-  const logList = document.getElementById('logList');
+function addLog(message, type = 'info', target = 'login') {
+  const logList = document.getElementById(target === 'warehouse' ? 'warehouseLogList' : 'logList');
   if (!logList) return;
 
   const now = new Date();
@@ -229,6 +240,10 @@ function addLog(message, type = 'info') {
   while (logList.children.length > LOG_MAX_ENTRIES) {
     logList.lastElementChild?.remove();
   }
+}
+
+function addWarehouseLog(message, type = 'info') {
+  addLog(message, type, 'warehouse');
 }
 
 // ==================== 工具函数 ====================
@@ -441,6 +456,7 @@ function createZipBlob(files) {
 
 function setStatus(state, text) {
   const badge = document.getElementById('statusBadge');
+  if (!badge) return;
   badge.className = `status-badge ${state === 'loading' ? 'loading' : state === 'error' ? 'error' : ''}`;
   badge.querySelector('.status-text').textContent = text;
 }

@@ -14,6 +14,7 @@ It can import Outlook accounts, fetch OpenAI verification codes through IMAP or 
 - CPA export as one JSON file per account
 - sub2api export in grouped JSON format
 - Cockpit export as a flat Codex token JSON array accepted by `cockpit-tools`
+- CPA warehouse: scan CLIProxyAPI 401 credentials, relogin for fresh CPA JSON, and delete deactivated accounts
 - Session converter for raw `https://chatgpt.com/api/auth/session` JSON
 - Optional outbound proxy support through environment variables or Windows proxy auto-detection
 
@@ -164,6 +165,25 @@ Cockpit export uses the flat Codex token JSON array supported by the current `co
 ```
 
 `cockpit-tools` reads `id_token`, `access_token`, and `account_id`. When `refresh_token` is empty, it can fall back to `session_token`.
+
+## CPA Warehouse
+
+The CPA warehouse tab talks directly to the CLIProxyAPI management API. Flow:
+
+```text
+scan CPA auth-files
+→ find 401 credentials
+→ relogin the matching local Outlook account
+→ success: generate and upload fresh CPA JSON
+→ deactivated account: delete the old CPA credential
+```
+
+Required inputs:
+
+- CPA base URL, for example `http://localhost:8317`
+- management key, sent as `Authorization: Bearer <key>`
+
+Only credentials whose `status/status_message` contains `401` or `unauthorized` are processed automatically. Other failures are skipped or reported to avoid accidental deletion.
 
 ## Data Storage
 

@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="ChatGPT 自动登录凭证管理系统 - Outlook双协议取件 + 自动登录 + Session转换">
-  <title>ChatGPT 凭证管理 | 自动登录 + Session 转换</title>
+  <meta name="description" content="ChatGPT 自动登录凭证管理系统 - Outlook双协议取件 + 自动登录 + Session转换 + CPA仓管">
+  <title>ChatGPT 凭证管理 | 自动登录 + Session 转换 + CPA 仓管</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -29,13 +29,7 @@
         </div>
         <div>
           <h1 class="app-title">ChatGPT 凭证管理</h1>
-          <p class="app-subtitle">Outlook 双协议取件 · 自动登录 · Session 转换</p>
-        </div>
-      </div>
-      <div class="header-right">
-        <div class="status-badge" id="statusBadge">
-          <span class="status-dot"></span>
-          <span class="status-text">就绪</span>
+          <p class="app-subtitle">Outlook 双协议取件 · 自动登录 · Session 转换 · CPA 仓管</p>
         </div>
       </div>
     </header>
@@ -53,6 +47,10 @@
       <button class="tab-btn" data-tab="convert" id="tabBtnConvert">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
         Session 转换
+      </button>
+      <button class="tab-btn" data-tab="warehouse" id="tabBtnWarehouse">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg>
+        CPA 仓管
       </button>
       <button class="tab-btn" data-tab="logs" id="tabBtnLogs">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
@@ -290,18 +288,98 @@
       </div>
     </div>
 
-    <!-- ==================== Tab 4: 日志 ==================== -->
+    <!-- ==================== Tab 4: CPA 仓管 ==================== -->
+    <div class="tab-content" id="tab-warehouse">
+      <section class="warehouse-section">
+        <div class="warehouse-panel glass-panel">
+          <div class="warehouse-header">
+            <div>
+              <h3>CPA 401 自动仓管</h3>
+              <p class="text-muted">扫描 CPA auth-files，401 凭证会尝试重新登录；成功上传新 CPA，账号停用则删除旧凭证。</p>
+            </div>
+            <div class="warehouse-actions">
+              <div class="warehouse-status-pill idle" id="cpaConnectionStatus">
+                <span class="warehouse-status-dot"></span>
+                <span id="cpaConnectionText">未连接</span>
+              </div>
+              <button class="btn btn-ghost btn-small" id="btnCpaScan401">扫描 401</button>
+              <button class="btn btn-primary btn-small" id="btnCpaRepair401">修复 401</button>
+            </div>
+          </div>
+          <div class="warehouse-config">
+            <div class="input-group">
+              <input type="text" id="cpaBaseUrl" class="input warehouse-input" value="http://localhost:8317" placeholder="CPA 地址" />
+            </div>
+            <div class="input-group flex-grow">
+              <input type="password" id="cpaManagementKey" class="input warehouse-input" placeholder="CPA 管理密钥" autocomplete="off" />
+            </div>
+            <div class="input-group warehouse-limit-group">
+              <span class="warehouse-limit-label">单次处理上限</span>
+              <input type="number" id="cpaMaxItems" class="input warehouse-input warehouse-limit-input" min="1" max="50" value="20" placeholder="最多处理数量" />
+            </div>
+            <label class="warehouse-auto-toggle">
+              <input type="checkbox" id="cpaAutoToggle" />
+              <span class="warehouse-toggle-track"><span class="warehouse-toggle-thumb"></span></span>
+              <span>自动仓管</span>
+            </label>
+            <div class="input-group warehouse-interval-group">
+              <span class="warehouse-interval-label">扫描间隔</span>
+              <input type="number" id="cpaAutoInterval" class="input warehouse-input warehouse-interval-input" min="1" max="1440" value="5" placeholder="分钟" />
+            </div>
+          </div>
+          <div class="warehouse-stats" id="warehouseStats">
+            <div class="stat-card"><div class="stat-value" id="cpaStatTotal">0</div><div class="stat-label">CPA 凭证</div></div>
+            <div class="stat-card"><div class="stat-value" id="cpaStat401">0</div><div class="stat-label">401 待处理</div></div>
+            <div class="stat-card"><div class="stat-value" id="cpaStatUploaded">0</div><div class="stat-label">已上传</div></div>
+            <div class="stat-card"><div class="stat-value" id="cpaStatDeleted">0</div><div class="stat-label">已删除</div></div>
+          </div>
+          <div class="warehouse-workspace">
+            <div class="warehouse-table-wrapper">
+              <table class="warehouse-table">
+                <thead>
+                  <tr>
+                    <th>文件</th>
+                    <th>邮箱</th>
+                    <th>状态</th>
+                    <th>处理结果</th>
+                  </tr>
+                </thead>
+                <tbody id="warehouseTableBody">
+                  <tr><td colspan="4"><div class="empty-state" style="padding:40px 20px"><p>先扫描 CPA 401 凭证</p></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <section class="log-section warehouse-log-panel">
+              <div class="log-header">
+                <h3>CPA 仓管日志</h3>
+                <button class="btn btn-ghost btn-small log-clear-btn" id="btnClearWarehouseLogs">清空</button>
+              </div>
+              <div class="log-list" id="warehouseLogList">
+                <div class="log-entry">
+                  <span class="log-time">--:--:--</span>
+                  <span class="log-type info">INFO</span>
+                  <span class="log-message">仓管日志就绪，等待扫描或修复...</span>
+                </div>
+              </div>
+            </section>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- ==================== Tab 5: 日志 ==================== -->
     <div class="tab-content" id="tab-logs">
       <section class="log-section glass-panel">
         <div class="log-header">
-          <h3>📋 操作日志</h3>
-          <button class="btn btn-ghost btn-small" id="btnClearLogs" style="color:rgba(255,255,255,0.5);border-color:rgba(255,255,255,0.1)">清空</button>
+          <h3>自动登录日志</h3>
+          <button class="btn btn-ghost btn-small log-clear-btn" id="btnClearLogs">清空</button>
         </div>
         <div class="log-list" id="logList">
           <div class="log-entry">
             <span class="log-time">--:--:--</span>
             <span class="log-type info">INFO</span>
-            <span class="log-message">系统就绪，等待操作...</span>
+            <span class="log-message">系统就绪，等待登录操作...</span>
           </div>
         </div>
       </section>
@@ -355,5 +433,6 @@
   <script src="/js/mail-fetcher.js?v=20260524-cpa-compatible"></script>
   <script src="/js/chatgpt-login.js?v=20260524-cpa-compatible"></script>
   <script src="/js/session-converter.js?v=20260524-cpa-compatible"></script>
+  <script src="/js/cpa-warehouse.js?v=20260524-cpa-compatible"></script>
 </body>
 </html>
