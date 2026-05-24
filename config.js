@@ -36,5 +36,5 @@ module.exports = {
 
   // Node 后端出站代理。留空时自动读取 Windows 当前用户代理。
  // proxy: process.env.HTTPS_PROXY || process.env.HTTP_PROXY || process.env.ALL_PROXY || 'auto',
-  proxy: none
+  proxy: 'none'
 };
